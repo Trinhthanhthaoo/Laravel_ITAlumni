@@ -22,7 +22,7 @@ class MentorInfo extends Model
         'referral_source',
         'suggestions_questions',
         'achievements',
-        
+        'status',
     ];
 
     // Define the relationship with the User model

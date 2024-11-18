@@ -58,34 +58,35 @@ class MentorInfoController extends Controller
 
     // Lưu mentor info mới vào cơ sở dữ liệu
     public function store(Request $request)
-{
-    $request->validate([
-        'user_id' => 'required|exists:users,id',
-        'name' => 'required|string|max:255',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate hình ảnh
-        'expertise' => 'nullable|string|max:255',
-        'organization' => 'nullable|string|max:100',
-        'referral_source' => 'nullable|string|max:255',
-        'suggestions_questions' => 'nullable|string',
-        'achievements' => 'nullable|string',
-    ]);
-
-    $data = $request->all();
-
-    // Xử lý upload file
-    if ($request->hasFile('image')) {
-        $imagePath = $request->file('image')->store('mentor_images', 'public');
-        $data['image'] = $imagePath; // Lưu đường dẫn file vào cơ sở dữ liệu
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'expertise' => 'nullable|string|max:255',
+            'organization' => 'nullable|string|max:100',
+            'referral_source' => 'nullable|string|max:255',
+            'suggestions_questions' => 'nullable|string',
+            'achievements' => 'nullable|string',
+            'status' => 'nullable|string|in:PENDING,APPROVED,REJECTED', // Validate status
+        ]);
+    
+        $data = $request->all();
+    
+        // Xử lý upload file
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('mentor_images', 'public');
+            $data['image'] = $imagePath;
+        }
+    
+        $mentorInfo = MentorInfo::create($data);
+    
+        return response()->json([
+            'message' => 'Thông tin mentor đã được tạo thành công.',
+            'data' => $mentorInfo,
+        ], 201);
     }
-
-    $mentorInfo = MentorInfo::create($data);
-
-    return response()->json([
-        'message' => 'Thông tin mentor đã được tạo thành công.',
-        'data' => $mentorInfo,
-    ], 201);
-}
-
+    
 
     // Hiển thị chi tiết mentor info
     public function show(MentorInfo $mentorInfo)
